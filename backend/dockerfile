@@ -1,0 +1,35 @@
+# Dockerfile para Backend (Java Spring Boot)
+FROM openjdk:21-jdk-slim
+
+WORKDIR /app
+
+# Define variáveis de ambiente para codificação
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+
+# Instala Maven
+RUN apt-get update && apt-get install -y maven && rm -rf /var/lib/apt/lists/*
+
+# Copia pom.xml primeiro para cache das dependências
+COPY pom.xml .
+
+# Baixa as dependências
+RUN mvn dependency:go-offline -B
+
+# Copia o código da aplicação
+COPY src ./src
+
+# Compila a aplicação
+RUN mvn clean package -DskipTests
+
+# Expõe a porta 8080
+EXPOSE 8080
+
+# Comando para iniciar a aplicação
+CMD ["sh", "-c", "java -jar target/*.jar"]
+
+# Expõe a porta 8080
+EXPOSE 8080
+
+# Comando para iniciar a aplicação
+CMD ["sh", "-c", "java -jar target/*.jar"]
